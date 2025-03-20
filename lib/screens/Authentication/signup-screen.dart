@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movio/screens/home-screen.dart';
+import 'package:movio/screens/MainScreens/home-screen.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:movio/widgets/text-form-fields.dart';
 import 'dart:math';
@@ -45,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       print("Username: $username");
 
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          context, MaterialPageRoute(builder: (context) => MainScreen()));
     } else {
       // Show error message if form validation fails
       ScaffoldMessenger.of(context).showSnackBar(

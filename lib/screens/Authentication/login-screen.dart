@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movio/screens/Authentication/forgot-password.dart';
-import 'package:movio/screens/home-screen.dart';
+import 'package:movio/screens/MainScreens/home-screen.dart';
 import 'package:movio/screens/Authentication/signup-screen.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:movio/widgets/signin-button.dart';
@@ -112,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       )),
                   onPressed:(){
                     if(_loginFormKey.currentState!.validate()){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>MainScreen()));
                     }
                   },
                   child: Text(
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
+                                builder: (context) => MainScreen()));
                       }),
                   SizedBox(
                     height: 15,
@@ -190,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
+                                builder: (context) => MainScreen()));
                       }),
                 ],
               )
