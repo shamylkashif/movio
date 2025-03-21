@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "325704926105",
+    "project_id": "movie-recommendation-sys-6ce14",
+    "storage_bucket": "movie-recommendation-sys-6ce14.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325704926105:android:53236e782716f8fdeec908",
+        "android_client_info": {
+          "package_name": "com.example.movio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi5Vmy9_4sJ3yFz2pPCAmvHgH3MMyjLjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
