@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movio/screens/MainScreens/home-screen.dart';
 import 'package:movio/utils/app-colors.dart';
@@ -32,20 +34,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return "$baseUsername$randomNum";
   }
 
-  void validateAndSignUp() {
+  void validateAndSignUp() async {
     if (_formKey.currentState!.validate()) {
-      // If all fields pass validation, proceed with signup
+      try{
+        // Create user in firebase Authentication
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: emailController.text,
+            password: passwordController.text
+        );
 
-      String username = generateUsername(nameController.text);
-      print("User Registered:");
-      print("Full Name: ${nameController.text}");
-      print("Email: ${emailController.text}");
-      print("Phone: ${phoneController.text}");
-      print("Gender: $selectedGender");
-      print("Username: $username");
+        // Get UID od newly created user
 
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => MainScreen()));
+        String uid = userCredential.user!.uid;
+
+        // Save additional information in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).set({
+          "fullName" : nameController.text,
+          "email" : emailController.text,
+          "phoneNumber" : phoneController.text,
+          "password" : passwordController.text,
+          "gender" : selectedGender,
+          "createdAT" : DateTime.now(),
+        });
+        print("User Registered Successfully!");
+
+        // Navigate to MainScreen
+
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>MainScreen()));
+
+      }catch(e){
+        // Show firebase error messages
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: primaryRed,)
+        );
+      }
+
     } else {
       // Show error message if form validation fails
       ScaffoldMessenger.of(context).showSnackBar(

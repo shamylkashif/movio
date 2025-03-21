@@ -12,6 +12,11 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
+      body: Center(
+        child: IconButton(onPressed: (){
+
+        }, icon: Icon(Icons.logout, size: 30,)),
+      ),
     );
   }
 }
