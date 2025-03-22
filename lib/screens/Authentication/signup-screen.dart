@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:movio/screens/MainScreens/home-screen.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:movio/widgets/text-form-fields.dart';
-import 'dart:math';
 
 import 'package:movio/widgets/validators.dart';
 
@@ -28,11 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? selectedGender; // Dropdown for Gender
   final _formKey = GlobalKey<FormState>();
 
-  String generateUsername(String fullName) {
-    String baseUsername = fullName.toLowerCase().replaceAll(" ", "");
-    int randomNum = Random().nextInt(9999);
-    return "$baseUsername$randomNum";
-  }
+
 
   void validateAndSignUp() async {
     if (_formKey.currentState!.validate()) {
