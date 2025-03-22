@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movio/SubScreens/movie-description.dart';
 import 'package:movio/screens/MainScreens/profile.dart';
 import 'package:movio/screens/MainScreens/search.dart';
 import 'package:movio/screens/MainScreens/watchList.dart';
@@ -33,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: background,
+        backgroundColor: Colors.grey[900],
         selectedItemColor: primaryRed,
         unselectedItemColor: lightGray,
         showSelectedLabels: false,
@@ -102,13 +103,18 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: _bannerMovies.length,
               itemBuilder: (context, index) {
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(_bannerMovies[index]),
-                      fit: BoxFit.fill,
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(_bannerMovies[index]),
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
                 );
@@ -134,55 +140,60 @@ class _HomeScreenState extends State<HomeScreen> {
               itemCount: _recommendedMovies.length,
               itemBuilder: (context, index) {
                 final movie = _recommendedMovies[index];
-                return Container(
-                  width: 140,
-                  margin: EdgeInsets.only(left: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[850],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                        child: Stack(
-                          children: [
-                            Image.asset(movie["image"], fit: BoxFit.cover, height: 140, width: 140),
-                            Positioned(
-                              top: 5,
-                              right: 5,
-                              child: Icon(Icons.add_circle, color: darkGray),
-                            )
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                return GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+                  },
+                  child: Container(
+                    width: 140,
+                    margin: EdgeInsets.only(left: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[850],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                          child: Stack(
                             children: [
-                              Text(movie["title"], style: TextStyle(color: white, fontWeight: FontWeight.bold)),
-                              SizedBox(height: 5),
-                              Text("${movie["year"]}  •  ${movie["duration"]}", style: TextStyle(color: lightGray, fontSize: 12)),
-                              SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Icon(Icons.star, color: yellow, size: 14),
-                                  SizedBox(width: 4),
-                                  Text("${movie["rating"]}", style: TextStyle(color: white)),
-                                ],
+                              Image.asset(movie["image"], fit: BoxFit.cover, height: 140, width: 140),
+                              Positioned(
+                                top: 5,
+                                right: 5,
+                                child: Icon(Icons.favorite, ),
                               )
                             ],
                           ),
                         ),
-                      )
-                    ],
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(movie["title"], style: TextStyle(color: white, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 5),
+                                Text("${movie["year"]}  •  ${movie["duration"]}", style: TextStyle(color: lightGray, fontSize: 12)),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Icon(Icons.star, color: yellow, size: 14),
+                                    SizedBox(width: 4),
+                                    Text("${movie["rating"]}", style: TextStyle(color: white)),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 );
               },
