@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../utils/app-colors.dart';
 
 class MovieCard extends StatelessWidget {
@@ -8,6 +7,7 @@ class MovieCard extends StatelessWidget {
   final String year;
   final String duration;
   final double rating;
+  final bool showAddIcon; // New parameter to control icon visibility
 
   const MovieCard({
     Key? key,
@@ -16,6 +16,7 @@ class MovieCard extends StatelessWidget {
     required this.year,
     required this.duration,
     required this.rating,
+    this.showAddIcon = true, // Default is true for search results
   }) : super(key: key);
 
   @override
@@ -44,23 +45,24 @@ class MovieCard extends StatelessWidget {
                 ),
               ),
 
-              // Add to Watchlist Button (Top Left)
-              Positioned(
-                top: 6,
-                left: 6,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.5), // Semi-transparent black
-                  ),
-                  child: const Icon(
-                    Icons.add_circle_outline_outlined,
-                    color: white,
-                    size: 20,
+              // Conditionally show the "Add" button
+              if (showAddIcon)
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withOpacity(0.5), // Semi-transparent black
+                    ),
+                    child: const Icon(
+                      Icons.add_circle_outline_outlined,
+                      color: white,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
           const SizedBox(width: 12),
@@ -81,7 +83,7 @@ class MovieCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   "$year  •  $duration",
-                  style: const TextStyle(color:lightGray),
+                  style: const TextStyle(color: lightGray),
                 ),
                 const SizedBox(height: 8),
 

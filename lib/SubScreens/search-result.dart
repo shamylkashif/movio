@@ -3,14 +3,19 @@ import 'package:movio/utils/app-colors.dart';
 
 import '../widgets/movie-card.dart';
 
-class SearchResultsScreen extends StatelessWidget {
+class SearchResultsScreen extends StatefulWidget {
+  @override
+  State<SearchResultsScreen> createState() => _SearchResultsScreenState();
+}
+
+class _SearchResultsScreenState extends State<SearchResultsScreen> {
   final List<Map<String, dynamic>> movies = [
     {
       "imageUrl": "assets/after.webp", // Replace with actual URL
       "title": "THE FALL GUY",
       "year": "2024",
       "duration": "2h 6m",
-      "rating": 6.9
+      "rating": 6.9,
     },
     {
       "imageUrl": "assets/alone.webp",
@@ -57,6 +62,7 @@ class SearchResultsScreen extends StatelessWidget {
             year: movie["year"],
             duration: movie["duration"],
             rating: movie["rating"],
+            showAddIcon: true,
           );
         },
       ),

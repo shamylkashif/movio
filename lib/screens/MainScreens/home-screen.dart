@@ -156,16 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                          child: Stack(
-                            children: [
-                              Image.asset(movie["image"], fit: BoxFit.cover, height: 140, width: 140),
-                              Positioned(
-                                top: 5,
-                                right: 5,
-                                child: Icon(Icons.favorite, ),
-                              )
-                            ],
-                          ),
+                          child: Image.asset(movie["image"], fit: BoxFit.cover, height: 140, width: 140),
                         ),
                         Expanded(
                           child: Container(

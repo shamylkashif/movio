@@ -48,11 +48,31 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ],
               ),
             ),
-            Image.asset(
-              'assets/juror.jpg', // Replace with movie poster URL
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.5,
-              fit: BoxFit.cover,
+            Stack(
+              children: [
+                Image.asset(
+                  'assets/juror.jpg', // Replace with movie poster URL
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withOpacity(0.5), // Semi-transparent black
+                    ),
+                    child: const Icon(
+                      Icons.favorite,
+                      color: white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             Padding(
