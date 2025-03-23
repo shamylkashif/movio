@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:movio/SubScreens/search-result.dart';
 import 'package:movio/utils/app-colors.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
   ];
 
   void searchMovies() {
-
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchResultsScreen()));
     print('Search movies with:');
     print('Type: $selectedType');
     print('Rating: $selectedRating');
