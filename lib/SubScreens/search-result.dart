@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movio/SubScreens/movie-description.dart';
 import 'package:movio/utils/app-colors.dart';
 
 import '../widgets/movie-card.dart';
@@ -56,13 +57,18 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         itemCount: movies.length,
         itemBuilder: (context, index) {
           final movie = movies[index];
-          return MovieCard(
-            imageUrl: movie["imageUrl"],
-            title: movie["title"],
-            year: movie["year"],
-            duration: movie["duration"],
-            rating: movie["rating"],
-            showAddIcon: true,
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+            },
+            child: MovieCard(
+              imageUrl: movie["imageUrl"],
+              title: movie["title"],
+              year: movie["year"],
+              duration: movie["duration"],
+              rating: movie["rating"],
+              showAddIcon: true,
+            ),
           );
         },
       ),
