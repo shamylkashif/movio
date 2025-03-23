@@ -43,7 +43,8 @@ class SearchResultsScreen extends StatelessWidget {
         backgroundColor: background,
         leading: IconButton(onPressed: (){
           Navigator.pop(context);
-        }, icon: Icon(Icons.arrow_back_ios_new,color: white,)),
+        },
+            icon: Icon(Icons.arrow_back_ios_new,color: white,)),
         title: const Text("Search Results", style: TextStyle(color: white)),
       ),
       body: ListView.builder(
