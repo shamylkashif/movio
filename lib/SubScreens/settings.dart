@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movio/SubScreens/about.dart';
+import 'package:movio/SubScreens/complain.dart';
+import 'package:movio/SubScreens/delete-acc.dart';
 
 import '../utils/app-colors.dart';
 
@@ -53,18 +56,23 @@ class _SettingsState extends State<Settings> {
              title: 'Delete account',
              icon: Icons.keyboard_double_arrow_right_sharp,
              onTap: (){
-
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>DeleteAccount()));
              }),
          Listile(
              title: 'Complain',
              icon: Icons.keyboard_double_arrow_right_sharp,
              onTap: (){
-
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>Complain()));
              }),
          Listile(
              title: 'About',
              icon: Icons.keyboard_double_arrow_right_sharp,
-             onTap: (){})
+             onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>About()));
+             }),
+
+
+
           ],
         ),
       ),
