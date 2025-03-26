@@ -13,7 +13,7 @@ class About extends StatefulWidget {
 
 class _AboutState extends State<About> {
 //Define Urls
-  String email = "mailto:test@example.com?subject=Support%20Request&body=Hello";
+  String email = "mailto:test@example.com";
   String linkedInUrl = "https://www.linkedin.com";
   String instagramUrl = "https://www.instagram.com";
   String twitterUrl = "https://www.twitter.com";
@@ -72,7 +72,7 @@ class _AboutState extends State<About> {
               height: 60,
               width: 320,
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: Colors.grey[900],
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Row(
