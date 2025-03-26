@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/about.dart';
+import 'package:movio/SubScreens/change-password.dart';
 import 'package:movio/SubScreens/complain.dart';
 import 'package:movio/SubScreens/delete-acc.dart';
 import 'package:movio/screens/Authentication/login-screen.dart';
@@ -52,6 +53,13 @@ class _SettingsState extends State<Settings> {
             });
           },
         ),
+
+         Listile(
+             title: 'Change Password',
+             icon: Icons.keyboard_double_arrow_right_sharp,
+             onTap: (){
+               Navigator.push(context, MaterialPageRoute(builder:(context)=>ChangePassword()));
+             }),
 
          Listile(
              title: 'Delete account',
