@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/about.dart';
 import 'package:movio/SubScreens/complain.dart';
 import 'package:movio/SubScreens/delete-acc.dart';
+import 'package:movio/screens/Authentication/login-screen.dart';
 
 import '../utils/app-colors.dart';
 
@@ -71,6 +72,21 @@ class _SettingsState extends State<Settings> {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>About()));
              }),
 
+            SizedBox(height: 30,),
+
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryRed,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    )),
+                onPressed:(){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                },
+                child: Text(
+                  'Log Out',
+                  style: TextStyle(color: white, fontSize: 18),
+                )),
 
 
           ],
