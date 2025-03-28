@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -110,11 +111,37 @@ class _LoginScreenState extends State<LoginScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       )),
-                  onPressed:(){
-                    if(_loginFormKey.currentState!.validate()){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>MainScreen()));
+                onPressed: () async {
+                  if (_loginFormKey.currentState!.validate()) {
+                    try {
+                      await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: emailController.text.trim(),
+                        password: passwordController.text.trim(),
+                      );
+                      // If login is successful, navigate to MainScreen
+                      Navigator.pushReplacement(
+                          context, MaterialPageRoute(builder: (context) => MainScreen()));
+                    } on FirebaseAuthException catch (e) {
+                      String errorMessage = "An error occurred. Please try again.";
+                      // Show the error message in an alert dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Login Failed"),
+                            content: Text(errorMessage),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("OK"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     }
-                  },
+                  }
+                },
                   child: Text(
                     'Log In',
                     style: TextStyle(color: white, fontSize: 18),

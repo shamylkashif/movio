@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/about.dart';
 import 'package:movio/SubScreens/change-password.dart';
@@ -32,7 +33,7 @@ class _SettingsState extends State<Settings> {
           children: [
             const CircleAvatar(
               radius: 60,
-              backgroundImage: AssetImage('assets/profile.jpg'),
+              backgroundImage: AssetImage('assets/profile.png'),
             ),
             SizedBox(height: 15,),
             Text(
@@ -89,14 +90,13 @@ class _SettingsState extends State<Settings> {
                       borderRadius: BorderRadius.circular(20),
                     )),
                 onPressed:(){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-                },
+                  FirebaseAuth.instance.signOut().then((value) {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                  }); },
                 child: Text(
                   'Log Out',
                   style: TextStyle(color: white, fontSize: 18),
                 )),
-
-
           ],
         ),
       ),

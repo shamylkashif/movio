@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:movio/SubScreens/write-review.dart';
 import 'package:movio/utils/app-colors.dart';
 
 class Reviews extends StatefulWidget {
@@ -41,6 +42,16 @@ class _ReviewsState extends State<Reviews> {
           icon: Icon(Icons.arrow_back_ios_new, color: white),
         ),
         title: Text("Reviews", style: TextStyle(color: white)),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: InkWell(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>WriteReview()));
+                },
+                child: Text('Write review', style: TextStyle(color: primaryRed, fontSize: 18),)),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

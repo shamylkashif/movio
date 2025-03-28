@@ -44,7 +44,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   children: [
                     const CircleAvatar(
                       radius: 50,
-                      backgroundImage: AssetImage('assets/profile.jpg'),
+                      backgroundImage: AssetImage('assets/profile.png'),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
