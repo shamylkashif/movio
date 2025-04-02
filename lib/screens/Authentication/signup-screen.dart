@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:movio/Services/auth_services.dart';
 import 'package:movio/screens/MainScreens/home-screen.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:movio/widgets/text-form-fields.dart';
@@ -25,40 +24,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool isConfirmPasswordHidden = true;
   String? selectedGender; // Dropdown for Gender
   final _formKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
 
 
 
   void validateAndSignUp() async {
     if (_formKey.currentState!.validate()) {
-      try {
-        // Create a user with email and password
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
-
-        // Get user ID
-        String uid = userCredential.user!.uid;
-
-        // Store additional user info in Firestore
-        await FirebaseFirestore.instance.collection('users').doc(uid).set({
-          'uid': uid,
-          'name': nameController.text.trim(),
-          'email': emailController.text.trim(),
-          'phone': phoneController.text.trim(),
-          'gender': selectedGender ?? "Not specified",
-          'createdAt': FieldValue.serverTimestamp(), // Store signup timestamp
-        });
-
-        // Navigate to Home Screen on successful signup
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => MainScreen()));
-
-      } catch (e) {
+      String? result = await _authService.signUp(
+          emailController.text.trim(),
+          passwordController.text.trim(),
+          nameController.text.trim(),
+          phoneController.text.trim(),
+          selectedGender ?? "Not Specified"
+      );
+      if(result == null) {
+        // Success : navigate to Main Screen
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
+      } else {
         // Show error message if signup fails
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: ${e.toString()}")),
+          SnackBar(content: Text(result)),
         );
       }
     }

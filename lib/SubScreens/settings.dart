@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:movio/Services/auth_services.dart';
 import 'package:movio/SubScreens/about.dart';
 import 'package:movio/SubScreens/change-password.dart';
 import 'package:movio/SubScreens/complain.dart';
@@ -17,6 +17,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   bool isNotification = false;
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -89,10 +90,10 @@ class _SettingsState extends State<Settings> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     )),
-                onPressed:(){
-                  FirebaseAuth.instance.signOut().then((value) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-                  }); },
+                onPressed:() async {
+                  await _authService.signOut();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
+                },
                 child: Text(
                   'Log Out',
                   style: TextStyle(color: white, fontSize: 18),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:movio/Services/tmdb_service.dart';
 import 'package:movio/SubScreens/movie-description.dart';
 import 'package:movio/screens/MainScreens/profile.dart';
 import 'package:movio/screens/MainScreens/search.dart';
 import 'package:movio/screens/MainScreens/watchList.dart';
 import 'package:movio/utils/app-colors.dart';
+
+import '../../SubScreens/see_all.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -59,41 +62,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<String> _bannerMovies = [
-    "assets/after.webp",
-    "assets/alone.webp",
-    "assets/train.webp",
-  ];
+  List<dynamic> _bannerMovies = [];
 
-  final List<Map<String, dynamic>> _recommendedMovies = [
-    {
-      "title": "Juror #2",
-      "image": "assets/juror.jpg",
-      "year": "2024",
-      "duration": "1h 54m",
-      "rating": 7.0,
-    },
-    {
-      "title": "Civil War",
-      "image": "assets/CivilWar.jpeg",
-      "year": "2024",
-      "duration": "1h 49m",
-      "rating": 7.0,
-    },
-    {
-      "title": "The Order",
-      "image": "assets/TheOrder.jpg",
-      "year": "2024",
-      "duration": "1h 49m",
-      "rating": 6.3,
-    },
-  ];
+  List<dynamic> _recommendedMovies = [];
+
+  String formatDuration(int? minutes) {
+    if (minutes == null || minutes <= 0) return "Unknown";
+    int hours = minutes ~/ 60;
+    int mins = minutes % 60;
+    return hours > 0 ? "$hours h ${mins} min" : "$mins min";
+  }
+
+
+  Future<void> FetchMovies() async {
+    try{
+      final trendingMovies = await TMDbService.fetchTrendingMovies();
+      final recommendedMovies = await TMDbService.fetchRecommendedMovies();
+
+      setState(() {
+        _bannerMovies = trendingMovies;
+        _recommendedMovies = recommendedMovies;
+      });
+    } catch(e) {
+      print("Error fetching movies: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
-      body: Column(
+      body: _bannerMovies.isEmpty || _recommendedMovies.isEmpty
+      ? Center(child: CircularProgressIndicator(color: primaryRed,))
+      :  Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: _bannerMovies.length,
               itemBuilder: (context, index) {
+                final movie = _bannerMovies[index];
                 return GestureDetector(
                   onTap: (){
                     Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
@@ -112,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 5),
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage(_bannerMovies[index]),
+                        image: NetworkImage("https://image.tmdb.org/t/p/w500${movie["backdrop_path"]}"),
                         fit: BoxFit.fill,
                       ),
                     ),
@@ -128,7 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Recommended", style: TextStyle(color: white, fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("See all", style: TextStyle(color: primaryRed, fontSize: 14, fontWeight: FontWeight.bold)),
+                InkWell(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SeeAll()));
+                    },
+                    child: Text("See all", style: TextStyle(color: primaryRed, fontSize: 14, fontWeight: FontWeight.bold))),
               ],
             ),
           ),
@@ -156,7 +162,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                          child: Image.asset(movie["image"], fit: BoxFit.cover, height: 140, width: 140),
+                          child: Image.network("https://image.tmdb.org/t/p/w500${movie["poster_path"]}",
+                              fit: BoxFit.cover, height: 140, width: 140),
                         ),
                         Expanded(
                           child: Container(
@@ -168,15 +175,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(movie["title"], style: TextStyle(color: white, fontWeight: FontWeight.bold)),
+                                Text(movie["title"] ?? "Unknown",
+                                    style: TextStyle(
+                                        color: white,
+                                        fontWeight: FontWeight.bold)),
                                 SizedBox(height: 5),
-                                Text("${movie["year"]}  •  ${movie["duration"]}", style: TextStyle(color: lightGray, fontSize: 12)),
+                                Text(
+                                  "${movie["release_date"] != null ? movie["release_date"].split('-')[0] : 'N/A'} • ${formatDuration(movie["duration"])}",
+                                  style: TextStyle(color: lightGray, fontSize: 12),
+                                ),
                                 SizedBox(height: 5),
                                 Row(
                                   children: [
                                     Icon(Icons.star, color: yellow, size: 14),
                                     SizedBox(width: 4),
-                                    Text("${movie["rating"]}", style: TextStyle(color: white)),
+                                    Text("${movie["vote_average"] ?? 0.0}",  style: TextStyle(color: white)),
                                   ],
                                 )
                               ],

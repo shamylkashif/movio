@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../Models/user_model.dart';
 
 class UserService {
@@ -10,31 +9,23 @@ class UserService {
   // Get current user ID
   String? get currentUserId => _auth.currentUser?.uid;
 
-  // Store User Data in Firestore after Signup
-  Future<bool> createUser(MovieAppUser user) async {
-    try {
-      if (user.uid == null) return false;
-
-      await _firestore.collection('users').doc(user.uid).set(user.toJson());
-      return true;
-    } catch (e) {
-      print("Error storing user data: $e");
-      return false;
-    }
-  }
-
   // Fetch User Data
   Future<MovieAppUser?> getUserData() async {
     try {
-      if (currentUserId == null) return null;
+      if (currentUserId == null) {
+        print("No logged-in user.");
+        return null;
+      }
 
       DocumentSnapshot userDoc =
       await _firestore.collection('users').doc(currentUserId).get();
 
       if (userDoc.exists) {
         return MovieAppUser.fromJson(userDoc.data() as Map<String, dynamic>);
+      } else {
+        print("User not found in Firestore.");
+        return null;
       }
-      return null;
     } catch (e) {
       print("Error fetching user data: $e");
       return null;
@@ -58,10 +49,16 @@ class UserService {
     try {
       if (currentUserId == null) return false;
 
-      await _firestore
-          .collection('users')
-          .doc(currentUserId)
-          .update(updatedUser.toJson());
+      DocumentReference userRef =
+      _firestore.collection('users').doc(currentUserId);
+
+      DocumentSnapshot userDoc = await userRef.get();
+      if (!userDoc.exists) {
+        print("User does not exist in Firestore.");
+        return false;
+      }
+
+      await userRef.update(updatedUser.toJson());
       return true;
     } catch (e) {
       print("Error updating user profile: $e");
@@ -79,6 +76,9 @@ class UserService {
 
       // Delete from Firebase Auth
       await _auth.currentUser?.delete();
+
+      // Sign out user
+      await _auth.signOut();
 
       return true;
     } catch (e) {
