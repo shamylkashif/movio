@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/reviews.dart';
 import 'package:movio/utils/app-colors.dart';
 
+import '../Services/tmdb_service.dart';
+
 class MovieDetailsScreen extends StatefulWidget {
-  const MovieDetailsScreen({super.key});
+  final Map<String, dynamic> movie;
+  const MovieDetailsScreen({super.key, required this.movie});
 
   @override
   State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
@@ -11,7 +14,44 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   bool isWatchedSelected = false;
+
   bool isWatchlistSelected = false;
+
+  late List<dynamic> genres = [];
+
+  String _limitTitle(String title){
+    List<String> words = title.split(" ");
+    return words.length > 3 ? "${words.take(3).join(" ")}..." : title ;
+  }
+
+  String formatDuration(int? minutes) {
+    if (minutes == null || minutes <= 0) return "N/A";
+    int hours = minutes ~/ 60;
+    int mins = minutes % 60;
+    return hours > 0 ? "$hours h ${mins} min" : "$mins min";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMovieDetails();
+  }
+
+  // Fetch movie details and genres
+  Future<void> _fetchMovieDetails() async {
+    try {
+      // Call fetchMovieGenres, which returns a list of genres
+      final genresList = await TMDbService.fetchMovieGenres(widget.movie['id']);
+
+      setState(() {
+        // Set the genres to the list returned by fetchMovieGenres
+        genres = genresList;  // genres will be a list now
+      });
+    } catch (e) {
+      print("Error fetching movie details: $e");
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +75,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       },
                     ),
                   ),
-                  const Text(
-                    'Red One',
-                    style: TextStyle(fontSize: 20, color: white),
+                  Expanded(
+                    child: Text(
+                     widget.movie['title'] ?? "N/A" ,
+                      style: TextStyle(fontSize: 20, color: white),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   SizedBox(width: 150,),
                   InkWell(
@@ -50,8 +93,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             ),
             Stack(
               children: [
-                Image.asset(
-                  'assets/juror.jpg', // Replace with movie poster URL
+                Image.network(
+                  "https://image.tmdb.org/t/p/w500${widget.movie["backdrop_path"] ??widget.movie["poster_path"]}",
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height * 0.5,
                   fit: BoxFit.cover,
@@ -83,37 +126,37 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Red One', style: TextStyle(color: white,fontSize: 24),),
-                      Text('2024',style: TextStyle(color: white),),
+                      Expanded(child: Text(_limitTitle(widget.movie['title'] ?? "N/A") , overflow: TextOverflow.ellipsis ,style: TextStyle(color: white,fontSize: 24),)),
+                      Text(widget.movie['release_date'].split('-')[0] ?? "N/A",style: TextStyle(color: white),),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Row(
                         children: [
                           Icon(Icons.star, color: yellow, size: 18),
                           SizedBox(width: 4),
-                          Text('6.7', style: TextStyle(color: white),),
+                          Text(widget.movie['vote_average'].toString() , style: TextStyle(color: white),),
                         ],
                       ),
-                      Text('2h 12m', style: TextStyle(color: white),),
+                      Text(formatDuration(widget.movie["duration"]), style: TextStyle(color: white),),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  SizedBox(
+
+                  genres.isEmpty
+                  ? SizedBox(
                     height: 30,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: const [
-                        GenreChip(label: 'Mystery'),
-                        GenreChip(label: 'Action'),
-                        GenreChip(label: 'Adventure'),
-                        GenreChip(label: 'Comedy'),
-                      ],
+                      children: genres.map<Widget>((genre) {
+                        return GenreChip(label: genre['name']);  // Access 'name' from the genre map
+                      }).toList(),
                     ),
-                  ),
+                  )
+                  : Text("No genres available", style: TextStyle(color: white)),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -150,8 +193,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'After Santa Claus is kidnapped, the North Pole\'s Head of Security must team up with a notorious hacker in a globe-trotting, action-packed mission to save Christmas.',
+                   Text(
+                    widget.movie['overview'],
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, color: white,),
                     overflow: TextOverflow.ellipsis,
@@ -166,8 +209,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     );
   }
 }
-
-
 
 class GenreChip extends StatelessWidget {
   final String label;

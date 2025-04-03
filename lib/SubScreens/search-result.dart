@@ -59,7 +59,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           final movie = movies[index];
           return GestureDetector(
             onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen(movie: {},)));
             },
             child: MovieCard(
               imageUrl: movie["imageUrl"],

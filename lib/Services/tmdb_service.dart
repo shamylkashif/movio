@@ -18,6 +18,7 @@ class TMDbService {
     }
   }
 
+
   // Fetch recommended movies
   static Future<List<dynamic>> fetchRecommendedMovies() async {
     final url = Uri.parse("$_baseUrl/movie/popular?api_key=$_apiKey");
@@ -30,4 +31,19 @@ class TMDbService {
       throw Exception("Failed to load recommended movies");
     }
   }
+
+  // Fetch movie details by ID
+  static Future<List<dynamic>> fetchMovieGenres(int movieId) async {
+    final url = Uri.parse("$_baseUrl/movie/$movieId?api_key=$_apiKey");
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      // Extract genres from the movie data
+      return data['genres'] ?? [];  // Return genres or an empty list if no genres
+    } else {
+      throw Exception("Failed to load movie details");
+    }
+  }
+
 }

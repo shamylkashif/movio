@@ -53,7 +53,7 @@ class _SeeAllState extends State<SeeAll> {
             final movie = movies[index];
             return InkWell(
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen(movie: {},)));
               },
               child: MovieCard(
                   imageUrl: movie['imageUrl'],

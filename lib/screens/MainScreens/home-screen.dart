@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _recommendedMovies = [];
 
   String formatDuration(int? minutes) {
-    if (minutes == null || minutes <= 0) return "Unknown";
+    if (minutes == null || minutes <= 0) return "N/A";
     int hours = minutes ~/ 60;
     int mins = minutes % 60;
     return hours > 0 ? "$hours h ${mins} min" : "$mins min";
@@ -89,6 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState(){
+    super.initState();
+    FetchMovies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
@@ -107,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 final movie = _bannerMovies[index];
                 return GestureDetector(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen(movie: movie,)));
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width,
@@ -148,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 final movie = _recommendedMovies[index];
                 return GestureDetector(
                   onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen(movie: movie,)));
                   },
                   child: Container(
                     width: 140,
@@ -178,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(movie["title"] ?? "Unknown",
                                     style: TextStyle(
                                         color: white,
-                                        fontWeight: FontWeight.bold)),
+                                        fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),
                                 SizedBox(height: 5),
                                 Text(
                                   "${movie["release_date"] != null ? movie["release_date"].split('-')[0] : 'N/A'} • ${formatDuration(movie["duration"])}",
