@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/reviews.dart';
 import 'package:movio/utils/app-colors.dart';
-
+import 'package:provider/provider.dart';
+import '../Provider/movies_provider.dart';
 import '../Services/tmdb_service.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
@@ -13,9 +14,6 @@ class MovieDetailsScreen extends StatefulWidget {
 }
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
-  bool isWatchedSelected = false;
-
-  bool isWatchlistSelected = false;
 
   late List<dynamic> genres = [];
 
@@ -55,6 +53,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final moviesProvider = Provider.of<MoviesProvider>(context);
+    bool isWatched = moviesProvider.isWatched(widget.movie);
+    bool isWatchList = moviesProvider.isInWatchlist(widget.movie);
+    bool isFavorite = moviesProvider.isFavorite(widget.movie);
+
     return Scaffold(
       backgroundColor: background,
       body: SingleChildScrollView(
@@ -102,16 +105,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 Positioned(
                   top: 6,
                   right: 6,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.black.withOpacity(0.5), // Semi-transparent black
-                    ),
-                    child: const Icon(
-                      Icons.favorite,
-                      color: white,
-                      size: 20,
+                  child: InkWell(
+                    onTap: (){
+                      moviesProvider.toggleFavorite(context, widget.movie);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(0.5), // Semi-transparent black
+                      ),
+                      child: Icon(
+                        Icons.favorite,
+                        color: isFavorite ? Colors.red : white,
+                        size: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -163,30 +171,28 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isWatchedSelected ? white : Colors.black,
+                            backgroundColor: isWatched ? white : Colors.black,
                             side: BorderSide(color: white),
                           ),
                           onPressed: (){
-                            isWatchedSelected = !isWatchedSelected;
-                            isWatchlistSelected = false;
+                            moviesProvider.toggleWatched(context, widget.movie);
                           },
                           child: Text('Watched',
-                            style:TextStyle(color: isWatchedSelected ? Colors.black : white) ,),
+                            style:TextStyle(color: isWatched ? Colors.black : white) ,),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isWatchlistSelected ? white : Colors.black,
+                            backgroundColor: isWatchList ? white : Colors.black,
                             side: BorderSide(color: white),
                           ),
                           onPressed: () {
-                            isWatchlistSelected = !isWatchlistSelected;
-                            isWatchedSelected = false;
+                            moviesProvider.toggleWatchlist(context, widget.movie);
                           },
                           child: Text('Add To Watchlist',
-                          style: TextStyle(color: isWatchlistSelected ? Colors.black : white),
+                          style: TextStyle(color: isWatchList ? Colors.black : white),
                           ),
                         ),
                       ),
