@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/settings.dart';
 import 'package:movio/utils/app-colors.dart';
+import 'package:provider/provider.dart';
+import '../../Provider/movies_provider.dart';
 import '../../widgets/movie-card.dart';
 
 class Profile extends StatefulWidget {
@@ -72,13 +74,18 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              ProfileStat(title: "Watched", count: 12),
+                            children:[
+                              Consumer<MoviesProvider>
+                                (builder: (context, provider, child) {
+                                  return ProfileStat(title: "Watched", count: provider.watchedCount);
+                              }),
                               SizedBox(width: 20),
                               ProfileStat(title: "Review", count: 22),
                               SizedBox(width: 20),
-                              ProfileStat(title: "WatchList", count: 22),
-                            ],
+                              Consumer<MoviesProvider>
+                                (builder: (context, provider, child) {
+                                return ProfileStat(title: "WatchList", count: provider.watchlistCount);
+                              }),                            ],
                           ),
                         ],
                       ),
@@ -105,8 +112,8 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             child: TabBarView(
               controller: _tabController,
               children: const [
-                MoviesList(),
-                MoviesList(),
+                MoviesList(type: "watched"),
+                MoviesList(type: "favorite")
               ],
             ),
           ),
@@ -142,23 +149,29 @@ class ProfileStat extends StatelessWidget {
   }
 }
 
+
+
 class MoviesList extends StatelessWidget {
-  const MoviesList({Key? key}) : super(key: key);
+  final String type;
+  const MoviesList({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      children: const [
-        MovieCard(
-          imageUrl: "assets/TheOrder.jpg",
-          title: "RED ONE",
-          year: "2024",
-          duration: "2h 3m 12A",
-          rating: 6.4,
+    final moviesProvider = Provider.of<MoviesProvider>(context);
+    List<Map<String, dynamic>> movies =
+    (type == "watched") ? moviesProvider.watchedMovies : moviesProvider.favoriteMovies;
+    return ListView.builder(
+      itemCount: movies.length,
+      itemBuilder:(context, index){
+        return MovieCard(
+          imageUrl: movies[index]["poster"],
+          title: movies[index]["title"],
+          rating: movies[index]["rating"],
+          year: movies[index]['year'],
+          duration: movies[index]['duration'],
           showAddIcon: false,
-        ),
-      ],
+        );
+      },
     );
   }
 }

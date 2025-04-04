@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:movio/widgets/movie-card.dart';
+import 'package:provider/provider.dart';
+
+import '../../Provider/movies_provider.dart';
 
 class Watchlist extends StatefulWidget {
   const Watchlist({super.key});
@@ -12,45 +15,10 @@ class Watchlist extends StatefulWidget {
 
 class _WatchlistState extends State<Watchlist> with SingleTickerProviderStateMixin {
   late TabController tabController;
-  final List<Map<String, dynamic>> watched = [
-    {
-      'title' : 'Interstellar',
-      'poster' : 'assets/TheOrder.jpg',
-      'rating' : 7.5,
-      'year' : '2023',
-      'duration' : '2h 6m'
-    },
-    {
-      'title' : 'Inception',
-      'poster' : 'assets/CivilWar.jpeg',
-      'rating' : 7.4,
-      'year' : '2023',
-      'duration' : '2h 6m'
-    }
-  ];
-
-  final List<Map<String, dynamic>> watchList = [
-    {
-      'title' : 'Oppenheimer',
-      'poster' : 'assets/juror.jpg',
-      'rating' : 7.5,
-      'year' : '2023',
-      'duration' : '2h 6m'
-    },
-    {
-      'title' : 'Inception',
-      'poster' : 'assets/CivilWar.jpeg',
-      'rating' : 7.4,
-      'year' : '2023',
-      'duration' : '2h 6m'
-    }
-  ];
 
   void initState(){
     super.initState();
-    setState(() {
-      tabController = TabController(length: 2, vsync: this);
-    });
+    tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -77,8 +45,8 @@ class _WatchlistState extends State<Watchlist> with SingleTickerProviderStateMix
               controller: tabController,
               physics: BouncingScrollPhysics(),
               children: [
-               MoviesList(watched),
-               MoviesList(watchList),
+                 MovieList(type: "watched"),
+                 MovieList(type: "watchlist"),
               ],
             ),
           ),
@@ -88,19 +56,30 @@ class _WatchlistState extends State<Watchlist> with SingleTickerProviderStateMix
   }
 }
 
-Widget MoviesList(List<Map<String, dynamic>> movies)
- {
-  return ListView.builder(
-  itemCount: movies.length,
-  itemBuilder:(context, index){
-    return MovieCard(
-        imageUrl: movies[index]["poster"],
-        title: movies[index]["title"],
-        rating: movies[index]["rating"],
-        year: movies[index]['year'],
-        duration: movies[index]['duration'],
-        showAddIcon: false,
+
+
+class MovieList extends StatelessWidget {
+  final String type;
+  const MovieList({super.key, required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    final moviesProvider = Provider.of<MoviesProvider>(context);
+    List<Map<String, dynamic>> movies =
+    (type == "watched") ? moviesProvider.watchedMovies : moviesProvider.watchlistMovies;
+    return ListView.builder(
+      itemCount: movies.length,
+      itemBuilder:(context, index){
+        return MovieCard(
+          imageUrl: movies[index]["poster"],
+          title: movies[index]["title"],
+          rating: movies[index]["rating"],
+          year: movies[index]['year'],
+          duration: movies[index]['duration'],
+          showAddIcon: false,
+        );
+      },
     );
-  },
-  );
+  }
 }
+

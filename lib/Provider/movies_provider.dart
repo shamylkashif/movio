@@ -17,7 +17,7 @@ class MoviesProvider with ChangeNotifier {
 // Show message that it's already added
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("${movie['title']} is already in Watched List!"),
+          content: Text("${movie['title']} is already in Watched List"),
           duration: Duration(seconds: 2),
         ),
       );
@@ -28,7 +28,7 @@ class MoviesProvider with ChangeNotifier {
       // Show confirmation message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("${movie['title']} added to Watchlist!"),
+          content: Text("${movie['title']} added to Watched"),
           duration: Duration(seconds: 2),
         ),
       );
@@ -75,7 +75,7 @@ class MoviesProvider with ChangeNotifier {
       // Show confirmation message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("${movie['title']} added to Watchlist!"),
+          content: Text("${movie['title']} added to Favorites"),
           duration: Duration(seconds: 2),
         ),
       );
