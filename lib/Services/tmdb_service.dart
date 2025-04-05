@@ -46,4 +46,30 @@ class TMDbService {
     }
   }
 
+  // Search movies based on filters
+  static Future<List<dynamic>> searchMovies({
+    required String type,
+    required int rating,
+    required String year,
+    required List<String> genres,
+  }) async {
+    String genreQuery = genres.isNotEmpty ? genres.join(',') : '';
+    String typeQuery = type != 'All' ? '&media_type=$type' : '';
+    String ratingQuery = rating > 0 ? '&vote_average.gte=$rating' : '';
+    String yearQuery = year.isNotEmpty ? '&year=$year' : '';
+
+    final url = Uri.parse(
+        "$_baseUrl/discover/movie?api_key=$_apiKey$typeQuery$ratingQuery$yearQuery&with_genres=$genreQuery"
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data["results"];  // Returning the list of movies
+    } else {
+      throw Exception("Failed to load search results");
+    }
+  }
+
 }

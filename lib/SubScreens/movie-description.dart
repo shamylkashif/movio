@@ -149,7 +149,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           Text(widget.movie['vote_average'].toString() , style: TextStyle(color: white),),
                         ],
                       ),
-                      Text(formatDuration(widget.movie["duration"]), style: TextStyle(color: white),),
+                      Text(formatDuration(widget.movie["duration"] ?? 0), style: TextStyle(color: white),),
                     ],
                   ),
                   const SizedBox(height: 12),

@@ -62,6 +62,14 @@ class MovieList extends StatelessWidget {
   final String type;
   const MovieList({super.key, required this.type});
 
+  String formatDuration(int minutes) {
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    return "${hours}h ${mins}m";
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     final moviesProvider = Provider.of<MoviesProvider>(context);
@@ -71,12 +79,13 @@ class MovieList extends StatelessWidget {
       itemCount: movies.length,
       itemBuilder:(context, index){
         return MovieCard(
-          imageUrl: movies[index]["poster"],
-          title: movies[index]["title"],
-          rating: movies[index]["rating"],
-          year: movies[index]['year'],
-          duration: movies[index]['duration'],
-          showAddIcon: false,
+          imageUrl: movies[index]["poster_path"], // Use poster_path from TMDB
+          title: movies[index]["title"] ?? "Unknown",
+          rating: movies[index]["vote_average"] ?? 0.0,
+          year: (movies[index]["release_date"]?.toString().split('-')[0]) ?? 'N/A',
+          duration: formatDuration(
+              int.tryParse(movies[index]["duration"]?.toString() ?? '0') ?? 0
+          ),          showAddIcon: false,
         );
       },
     );

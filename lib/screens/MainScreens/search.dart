@@ -3,6 +3,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:movio/SubScreens/search-result.dart';
 import 'package:movio/utils/app-colors.dart';
 
+import '../../Services/tmdb_service.dart';
+
 class SearchScreen extends StatefulWidget {
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -22,13 +24,22 @@ class _SearchScreenState extends State<SearchScreen> {
     'Musical', 'Cartoon', 'Reality TV', 'Anime'
   ];
 
-  void searchMovies() {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchResultsScreen()));
-    print('Search movies with:');
-    print('Type: $selectedType');
-    print('Rating: $selectedRating');
-    print('Year: $selectedYear');
-    print('Genres: $selectedGenres');
+  void searchMovies() async {
+    // Calling the searchMovies function from TMDbService to get search results
+    final results = await TMDbService.searchMovies(
+      type: selectedType,
+      rating: selectedRating,
+      year: selectedYear,
+      genres: selectedGenres,
+    );
+
+    // Navigating to the SearchResultsScreen with the results
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchResultsScreen(results: results),
+      ),
+    );
   }
 
   @override
