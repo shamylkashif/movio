@@ -66,12 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<dynamic> _recommendedMovies = [];
 
-  String formatDuration(int? minutes) {
-    if (minutes == null || minutes <= 0) return "N/A";
-    int hours = minutes ~/ 60;
-    int mins = minutes % 60;
-    return hours > 0 ? "$hours h ${mins} min" : "$mins min";
-  }
+
 
 
   Future<void> FetchMovies() async {
@@ -187,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),
                                 SizedBox(height: 5),
                                 Text(
-                                  "${movie["release_date"] != null ? movie["release_date"].split('-')[0] : 'N/A'} • ${formatDuration(movie["duration"])}",
+                                  "${movie["release_date"].split('-')[0]}",
                                   style: TextStyle(color: lightGray, fontSize: 12),
                                 ),
                                 SizedBox(height: 5),

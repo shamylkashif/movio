@@ -80,8 +80,10 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                                   return ProfileStat(title: "Watched", count: provider.watchedCount);
                               }),
                               SizedBox(width: 20),
-                              ProfileStat(title: "Review", count: 22),
-                              SizedBox(width: 20),
+                              Consumer<MoviesProvider>
+                                (builder: (context, provider, child) {
+                                return ProfileStat(title: "Fav", count: provider.favoriteCount);
+                              }),                               SizedBox(width: 20),
                               Consumer<MoviesProvider>
                                 (builder: (context, provider, child) {
                                 return ProfileStat(title: "WatchList", count: provider.watchlistCount);

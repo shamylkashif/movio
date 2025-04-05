@@ -15,7 +15,7 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
-  late List<dynamic> genres = [];
+  Map<String, int> genres = {};
 
   String _limitTitle(String title){
     List<String> words = title.split(" ");
@@ -38,17 +38,18 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   // Fetch movie details and genres
   Future<void> _fetchMovieDetails() async {
     try {
-      // Call fetchMovieGenres, which returns a list of genres
-      final genresList = await TMDbService.fetchMovieGenres(widget.movie['id']);
+      // Call fetchGenres, which returns a map of genre names to IDs
+      final genresMap = await TMDbService.fetchGenres();  // No need to pass movie ID
 
       setState(() {
-        // Set the genres to the list returned by fetchMovieGenres
-        genres = genresList;  // genres will be a list now
+        // Set the genres to the map returned by fetchGenres
+        genres = genresMap;  // genres will be a Map<String, int>
       });
     } catch (e) {
       print("Error fetching movie details: $e");
     }
   }
+
 
 
   @override
@@ -68,15 +69,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               padding: const EdgeInsets.only(top: 30,),
               child: Row(
                 children: [
-                  Positioned(
-                    top: 40,
-                    left: 16,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new, color: white,size: 20,),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new, color: white,size: 20,),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
                   Expanded(
                     child: Text(
@@ -159,8 +156,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     height: 30,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: genres.map<Widget>((genre) {
-                        return GenreChip(label: genre['name']);  // Access 'name' from the genre map
+                      children: genres.keys.map<Widget>((genreName) {
+                        return GenreChip(label: genreName);  // Access 'name' from the genre map
                       }).toList(),
                     ),
                   )

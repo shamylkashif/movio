@@ -11,6 +11,7 @@ class MoviesProvider with ChangeNotifier {
 
   int get watchedCount => _watchedMovies.length;
   int get watchlistCount => _watchlistMovies.length;
+  int get favoriteCount => _favoriteMovies.length;
 
   void toggleWatched(BuildContext context ,Map<String, dynamic> movie) {
     if (_watchedMovies.contains(movie)) {

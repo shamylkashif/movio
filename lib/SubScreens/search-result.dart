@@ -14,8 +14,15 @@ class SearchResultsScreen extends StatefulWidget {
 
 class _SearchResultsScreenState extends State<SearchResultsScreen> {
 
+  String formatDuration(int minutes) {
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    return "${hours}h ${mins}m";
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("Search results length: ${widget.results.length}"); // ✅ Log this
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
@@ -30,17 +37,29 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         itemCount: widget.results.length,
         itemBuilder: (context, index) {
           final movie = widget.results[index];
+
+          String posterPath = movie['poster_path'] ?? '';
+          String imageUrl = posterPath.isNotEmpty
+              ? 'https://image.tmdb.org/t/p/w500$posterPath'
+              : 'https://via.placeholder.com/500'; // Use placeholder if no poster
+          final String title = movie["title"] ?? "Unknown";
+          final String year = movie["release_date"] != null
+              ? (movie["release_date"] as String).split("-")[0]
+              : "N/A";
+          final int duration = movie["runtime"] ?? 0;
+          final double rating = (movie["vote_average"] as num?)?.toDouble() ?? 0.0;
+
           return GestureDetector(
             onTap: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>MovieDetailsScreen(movie: movie,)));
             },
             child: MovieCard(
-              imageUrl: movie["imageUrl"],
-              title: movie["title"],
-              year: movie["year"],
-              duration: movie["duration"],
-              rating: movie["rating"],
-              showAddIcon: true,
+              imageUrl: imageUrl,
+              title: title,
+              year: year,
+              duration: formatDuration(duration),
+              rating: rating,
+              showAddIcon: false,
             ),
           );
         },

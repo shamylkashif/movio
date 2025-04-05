@@ -33,42 +33,73 @@ class TMDbService {
   }
 
   // Fetch movie details by ID
-  static Future<List<dynamic>> fetchMovieGenres(int movieId) async {
-    final url = Uri.parse("$_baseUrl/movie/$movieId?api_key=$_apiKey");
-    final response = await http.get(url);
-
+// In TMDbService
+  // Fetch genres dynamically from TMDb
+  static Future<Map<String, int>> fetchGenres() async {
+    final response = await http.get(Uri.parse('$_baseUrl/genre/movie/list?api_key=$_apiKey&language=en-US'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      // Extract genres from the movie data
-      return data['genres'] ?? [];  // Return genres or an empty list if no genres
+      Map<String, int> genreMap = {};
+      for (var genre in data['genres']) {
+        genreMap[genre['name']] = genre['id'];
+      }
+      return genreMap; // Return mapping of genre names to IDs
     } else {
-      throw Exception("Failed to load movie details");
+      throw Exception('Failed to load genres');
     }
   }
 
   // Search movies based on filters
-  static Future<List<dynamic>> searchMovies({
+  static Future<List<Map<String, dynamic>>> searchMovies({
     required String type,
     required int rating,
     required String year,
-    required List<String> genres,
+    required List<int> genres, // Genre IDs
   }) async {
-    String genreQuery = genres.isNotEmpty ? genres.join(',') : '';
-    String typeQuery = type != 'All' ? '&media_type=$type' : '';
-    String ratingQuery = rating > 0 ? '&vote_average.gte=$rating' : '';
-    String yearQuery = year.isNotEmpty ? '&year=$year' : '';
+    final genreParam = genres.isEmpty ? '' : '&with_genres=${genres.join(',')}'; // Join genre IDs if selected
+    final ratingParam = rating > 0 ? '&vote_average.gte=$rating' : ''; // Apply rating filter
+    final yearParam = year.isNotEmpty ? '&primary_release_year=$year' : ''; // Apply year filter
+    final typeParam = type != 'All' ? '&media_type=$type' : ''; // Apply type filter if selected
 
-    final url = Uri.parse(
-        "$_baseUrl/discover/movie?api_key=$_apiKey$typeQuery$ratingQuery$yearQuery&with_genres=$genreQuery"
-    );
+    final url = '$_baseUrl/discover/movie?api_key=$_apiKey&language=en-US' +
+        genreParam + ratingParam + yearParam + typeParam;
 
-    final response = await http.get(url);
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data["results"];  // Returning the list of movies
-    } else {
-      throw Exception("Failed to load search results");
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return List<Map<String, dynamic>>.from(data['results']);
+      } else {
+        throw Exception('Failed to load movies');
+      }
+    } catch (e) {
+      print(e);
+      throw Exception('Failed to load movies');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> searchMoviesByName({
+    required String query,
+  }) async {
+    // Encode the query to ensure it's URL-safe
+    final encodedQuery = Uri.encodeComponent(query);
+
+    // Construct the URL for the search API using the encoded query
+    final url = '$_baseUrl/search/movie?api_key=$_apiKey&language=en-US&query=$encodedQuery';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return List<Map<String, dynamic>>.from(data['results']);
+      } else {
+        throw Exception('Failed to load movies');
+      }
+    } catch (e) {
+      print(e);
+      throw Exception('Failed to load movies');
     }
   }
 

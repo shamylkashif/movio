@@ -15,25 +15,48 @@ class _SearchScreenState extends State<SearchScreen> {
   int selectedRating = 0;
   String selectedYear = '';
   List<String> selectedGenres = [];
+  TextEditingController _searchController = TextEditingController();
 
   final List<String> types = ['All', 'Movie', 'TV Series'];
   final List<String> years = ['2025', '2024', '2023', '2022'];
-  final List<String> genres = [
-    'Western', 'Drama', 'Adventure', 'War', 'Historical', 'Romance', 'Sci-Fi', 'Action',
-    'Romantic Comedy', 'Mystery', 'Documentary', 'Comedy', 'Family', 'Melodrama', 'Crime',
-    'Musical', 'Cartoon', 'Reality TV', 'Anime'
-  ];
+  List<String> genres = [];
+  Map<String, int> genreMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGenres();
+  }
+
+  // Fetch the genres dynamically from TMDb
+  void _fetchGenres() async {
+    final genreMapData = await TMDbService.fetchGenres(); // Fetch genres from TMDb API
+    setState(() {
+      genreMap = genreMapData; // Store the genre map
+      genres = genreMap.keys.toList(); // Store genre names for display
+    });
+  }
 
   void searchMovies() async {
-    // Calling the searchMovies function from TMDbService to get search results
-    final results = await TMDbService.searchMovies(
-      type: selectedType,
-      rating: selectedRating,
-      year: selectedYear,
-      genres: selectedGenres,
-    );
+    List<Map<String, dynamic>> results = [];
 
-    // Navigating to the SearchResultsScreen with the results
+    String query = _searchController.text.trim();
+
+    if (query.isNotEmpty) {
+      // Perform a search by movie name if query is provided
+      results = await TMDbService.searchMoviesByName(query: query);
+    } else {
+      // If query is empty, perform a filter-based search
+      List<int> selectedGenreIds = selectedGenres.map((genreName) => genreMap[genreName]!).toList();
+      results = await TMDbService.searchMovies(
+        type: selectedType,
+        rating: selectedRating,
+        year: selectedYear,
+        genres: selectedGenreIds,
+      );
+    }
+
+    // Navigate to the SearchResultsScreen with the results
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -48,7 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
       backgroundColor: background,
       appBar: AppBar(
         backgroundColor: background,
-        title: Text('Search', style: TextStyle(color: white),),
+        title: Text('Search', style: TextStyle(color: white)),
         titleSpacing: 24,
         automaticallyImplyLeading: false,
       ),
@@ -65,6 +88,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     height: 45, // Adjust height
                     width: 250,
                     child: TextField(
+                      controller: _searchController,
                       cursorColor: white, // Set cursor color
                       style: TextStyle(color: white),
                       decoration: InputDecoration(
@@ -88,17 +112,18 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
                   ),
-        
                   InkWell(
-                      onTap: (){
-                        setState(() {
-                          selectedType = 'All';
-                          selectedRating = 0;
-                          selectedYear = '';
-                          selectedGenres.clear();
-                        });
-                      },
-                      child: Text('Cancel', style: TextStyle(color: lightGray,fontSize: 17),)),
+                    onTap: () {
+                      setState(() {
+                        selectedType = 'All';
+                        selectedRating = 0;
+                        selectedYear = '';
+                        selectedGenres.clear();
+                        _searchController.clear();
+                      });
+                    },
+                    child: Text('Cancel', style: TextStyle(color: lightGray, fontSize: 17)),
+                  ),
                 ],
               ),
               SizedBox(height: 20),
@@ -116,20 +141,19 @@ class _SearchScreenState extends State<SearchScreen> {
                 )).toList(),
               ),
               SizedBox(height: 20),
-              Text('Rating', style: TextStyle(color: white, fontSize: 20),),
+              Text('Rating', style: TextStyle(color: white, fontSize: 20)),
               RatingBar.builder(
-                  itemPadding: EdgeInsets.symmetric(horizontal:10),
-                  itemSize: 40,
-                  updateOnDrag: true,
-                  unratedColor: white,
-                  itemBuilder: (context, _)=> Icon(Icons.star, color: Colors.amber,),
-                  onRatingUpdate: (rating){
-                    setState(() {
-                      selectedRating = rating.toInt();
-                    });
-                  }
+                itemPadding: EdgeInsets.symmetric(horizontal: 10),
+                itemSize: 40,
+                updateOnDrag: true,
+                unratedColor: white,
+                itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    selectedRating = rating.toInt();
+                  });
+                },
               ),
-
               SizedBox(height: 20),
               Text('Year', style: TextStyle(color: white, fontSize: 20)),
               Wrap(
