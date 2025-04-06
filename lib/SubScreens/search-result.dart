@@ -23,8 +23,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     print("Search results length: ${widget.results.length}");
-    print("Search results length: ${widget.results.length}");
-    print("Search results length: ${widget.results.length}");
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
