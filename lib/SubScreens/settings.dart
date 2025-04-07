@@ -8,14 +8,14 @@ import 'package:movio/screens/Authentication/login-screen.dart';
 
 import '../utils/app-colors.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({super.key});
+class AccountSettings extends StatefulWidget {
+  const AccountSettings({super.key});
 
   @override
-  State<Settings> createState() => _SettingsState();
+  State<AccountSettings> createState() => _AccountSettingsState();
 }
 
-class _SettingsState extends State<Settings> {
+class _AccountSettingsState extends State<AccountSettings> {
   bool isNotification = false;
   final AuthService _authService = AuthService();
 

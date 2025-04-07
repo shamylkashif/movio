@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:movio/SubScreens/settings.dart';
 import 'package:movio/utils/app-colors.dart';
@@ -66,7 +67,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Settings()));
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountSettings()));
                                 },
                                 icon: const Icon(Icons.settings, color: white),
                               ),
@@ -184,3 +185,48 @@ class MoviesList extends StatelessWidget {
     );
   }
 }
+
+
+
+
+Future<void> saveMovieToFirestore({
+  required String userId,
+  required String userName,
+  required String movieId,
+  required String title,
+  required String releaseDate,
+  required double voteAverage,
+  required int duration,
+}) async {
+  try {
+    // Log the data being saved
+    print("Saving movie to Firestore for user: $userId");
+
+    // Get the current timestamp for when the movie was saved
+    Timestamp savedAt = Timestamp.now();
+
+    // Add movie data to Firestore under the user's 'favorites' collection
+    await FirebaseFirestore.instance
+        .collection('favorites')  // Main collection for favorites
+        .doc(userId)  // User's document ID (userId)
+        .collection('movies')  // Subcollection where each movie is saved separately
+        .add({
+      'userName': userName,  // Save userName from users collection
+      'userId': userId,      // Save userId
+      'movieId': movieId,
+      'title': title,
+      'release_date': releaseDate,
+      'vote_average': voteAverage,
+      'duration': duration,
+      'savedAt': savedAt,
+    });
+
+    print("Movie saved successfully!");
+  } catch (e) {
+    print("Error saving movie: $e");
+  }
+}
+
+
+
+
