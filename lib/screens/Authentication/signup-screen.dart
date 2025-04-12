@@ -25,10 +25,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? selectedGender; // Dropdown for Gender
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
+  bool isLoading = false;
+
 
 
 
   void validateAndSignUp() async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
       String? result = await _authService.signUp(
           emailController.text.trim(),
@@ -168,8 +173,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           borderRadius: BorderRadius.circular(20)),
                     ),
                     onPressed: validateAndSignUp,
-                    child: Text('Sign Up',
-                        style: TextStyle(color: white, fontSize: 18)),
+                    child: isLoading
+                        ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                        : const Text(
+                      'Sign Up',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
                   SizedBox(height: 10),
                   TextButton(

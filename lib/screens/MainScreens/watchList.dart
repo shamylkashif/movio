@@ -20,7 +20,9 @@ class _WatchlistState extends State<Watchlist> with SingleTickerProviderStateMix
   void initState(){
     super.initState();
     tabController = TabController(length: 2, vsync: this);
+
   }
+
 
   @override
   Widget build(BuildContext context) {

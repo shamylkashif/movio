@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isPasswordHidden = true;
+  bool isLoading = false;
   final _loginFormKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
@@ -109,38 +111,56 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 30,
               ),
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryRed,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      )),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryRed,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
                 onPressed: () async {
                   if (_loginFormKey.currentState!.validate()) {
+                    setState(() => isLoading = true); // show loading spinner
+
                     String email = emailController.text.trim();
                     String password = passwordController.text.trim();
                     String? result = await _authService.signIn(email, password);
 
-                    if(result == null){
-                      // Get Current UserID
+                    if (result == null) {
                       String? uid = _authService.getCurrentUser()?.uid;
-                      if(uid != null) {
+                      if (uid != null) {
                         bool userExists = await _userService.checkUserExists(uid);
-                        if(userExists){
-                          // User does exits in firestore
-                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>MainScreen()));
+                        if (userExists) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => MainScreen()),
+                          );
                         } else {
-                          // User does not exists in firestore
-                          _showErrorDialog(context ,'User not found in Database, please sigup');}
+                          _showErrorDialog(context, 'User not found in Database, please signup');
+                        }
                       } else {
-                        _showErrorDialog(context ,'Error retrieving user data. Try again');}
-                    } else{
-                      _showErrorDialog(context ,'Incorrect email or password. Try Again');}
+                        _showErrorDialog(context, 'Error retrieving user data. Try again');
+                      }
+                    } else {
+                      _showErrorDialog(context, 'Incorrect email or password. Try Again');
+                    }
+
+                    setState(() => isLoading = false); // hide loading spinner
                   }
                 },
-                  child: Text(
-                    'Log In',
-                    style: TextStyle(color: white, fontSize: 18),
-                  )),
+                child: isLoading
+                    ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+                    : const Text(
+                  'Log In',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -180,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 30,
               ),
               Text(
                 'Or',
@@ -189,33 +209,27 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 height: 30,
               ),
-              Column(
-                children: [
-                  CustomSignInButton(
-                      text: "Sign In with Google ",
-                      icon: FontAwesomeIcons.google,
-                      iconColor: primaryRed,
-                      onTap: () {
-                        Navigator.push(
+              CustomSignInButton(
+                  text: "Sign In with Google ",
+                  icon: FontAwesomeIcons.google,
+                  iconColor: primaryRed,
+                  onTap: () async {
+                    User? user = await _authService.signInWithGoogle();
+                    if (user != null) {
+                      // Check if user exists in Firestore like you did for email/password
+                      bool userExists = await _userService.checkUserExists(user.uid);
+                      if(userExists){
+                        Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => MainScreen()));
-                      }),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  CustomSignInButton(
-                      text: "Sign In with Facebook ",
-                      icon: FontAwesomeIcons.facebook,
-                      iconColor: Colors.blue,
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainScreen()));
-                      }),
-                ],
-              )
+                            MaterialPageRoute(builder: (context) => MainScreen()));
+                      } else {
+                        _showErrorDialog(context, 'User not found in Database, please signup');
+                      }
+                    } else {
+                      _showErrorDialog(context, 'Google Sign-In Failed');
+                    }
+                  }
+              ),
             ],
           ),
         ),

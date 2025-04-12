@@ -14,9 +14,9 @@ class About extends StatefulWidget {
 class _AboutState extends State<About> {
 //Define Urls
   String email = "mailto:test@example.com";
-  String linkedInUrl = "https://www.linkedin.com";
+  String linkedInUrl = "https://www.linkedin.com/in/shamyl-kashif-923bb3259";
   String instagramUrl = "https://www.instagram.com";
-  String twitterUrl = "https://www.twitter.com";
+  String gitHubUrl = "https://github.com/shamylkashif";
 
 
   void _launchURL(String url) async {
@@ -81,7 +81,7 @@ class _AboutState extends State<About> {
                   IconButton(onPressed: () => _launchURL(email), icon: Icon(Icons.email, color: Colors.blue, size: 25)),
                   IconButton(onPressed: () => _launchURL(linkedInUrl), icon: FaIcon(FontAwesomeIcons.linkedinIn, color: Colors.blue, size: 25)),
                   IconButton(onPressed: () => _launchURL(instagramUrl), icon: FaIcon(FontAwesomeIcons.instagram, color: Colors.purple, size: 25)),
-                  IconButton(onPressed: () => _launchURL(twitterUrl), icon: FaIcon(FontAwesomeIcons.twitter, color: Colors.blue, size: 25)),
+                  IconButton(onPressed: () => _launchURL(gitHubUrl), icon: FaIcon(FontAwesomeIcons.github, color: white, size: 25)),
                 ],
               ),
             ),

@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:movio/SubScreens/settings.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:provider/provider.dart';
+import '../../Models/user_model.dart';
 import '../../Provider/movies_provider.dart';
 import '../../widgets/movie-card.dart';
 
@@ -14,12 +20,38 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
+
+
   late TabController _tabController;
+
+  String? userName;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchUserName();
+  }
+
+  // Method to fetch the user's name from Firestore
+  Future<void> _fetchUserName() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users') // Collection where user data is stored
+            .doc(user.uid) // Document ID is the user's UID
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            userName = userDoc['name'] ?? 'User';  // Assuming the user's name field is 'name'
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching user name: $e");
+    }
   }
 
   @override
@@ -57,9 +89,9 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                "kate",
-                                style: TextStyle(
+                              Text(
+                                userName ?? 'Loading...',
+                                style: const TextStyle(
                                   color: white,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
