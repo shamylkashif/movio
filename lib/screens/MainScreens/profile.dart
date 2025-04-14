@@ -1,14 +1,10 @@
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:movio/SubScreens/settings.dart';
 import 'package:movio/utils/app-colors.dart';
 import 'package:provider/provider.dart';
-import '../../Models/user_model.dart';
 import '../../Provider/movies_provider.dart';
 import '../../widgets/movie-card.dart';
 
