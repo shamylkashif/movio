@@ -1,35 +1,66 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:movio/SubScreens/write-review.dart';
+import 'package:http/http.dart' as http;
 import 'package:movio/utils/app-colors.dart';
 
 class Reviews extends StatefulWidget {
-  const Reviews({super.key});
+  final int movieId;
+
+  const Reviews({super.key, required this.movieId});
 
   @override
   State<Reviews> createState() => _ReviewsState();
 }
 
 class _ReviewsState extends State<Reviews> {
-  // Sample data for reviews (Will be fetched from database later)
-  final List<Map<String, dynamic>> reviews = [
-    {
-      "username": "JohnDoe",
-      "rating": 8.0,
-      "headline": "Amazing Movie!",
-      "review": "I really loved the cinematography and the acting was superb!",
-      "containsSpoilers": false,
-    },
-    {
-      "username": "MovieBuff99",
-      "rating": 6.0,
-      "headline": "Decent but predictable",
-      "review": "The movie had some great moments, but the twist was too obvious.",
-      "containsSpoilers": true,
-    },
-  ];
-
+  List<Map<String, dynamic>> reviews = [];
   final Map<int, bool> showSpoiler = {};
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchReviews();
+  }
+
+  Future<void> fetchReviews() async {
+    final apiKey = "2f51570f9c0a2142c2d7f3a934609f69"; // Replace with your actual TMDB API key
+    final url =
+        'https://api.themoviedb.org/3/movie/${widget.movieId}/reviews?api_key=$apiKey';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List results = data['results'];
+
+        final fetchedReviews = results.map<Map<String, dynamic>>((review) {
+          final content = review['content'] ?? '';
+          return {
+            "username": review['author'] ?? "Anonymous",
+            "rating":
+            review['author_details']?['rating']?.toDouble() ?? 0.0,
+            "headline": "Review by ${review['author'] ?? "Anonymous"}",
+            "review": content,
+            // Basic spoiler detection (can improve later)
+            "containsSpoilers": content.toLowerCase().contains("spoiler"),
+          };
+        }).toList();
+
+        setState(() {
+          reviews = fetchedReviews;
+          isLoading = false;
+        });
+      } else {
+        setState(() => isLoading = false);
+        debugPrint("Failed to fetch reviews: ${response.statusCode}");
+      }
+    } catch (e) {
+      setState(() => isLoading = false);
+      debugPrint("Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +73,18 @@ class _ReviewsState extends State<Reviews> {
           icon: Icon(Icons.arrow_back_ios_new, color: white),
         ),
         title: Text("Reviews", style: TextStyle(color: white)),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: InkWell(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>WriteReview()));
-                },
-                child: Text('Write review', style: TextStyle(color: primaryRed, fontSize: 18),)),
-          ),
-        ],
+
       ),
-      body: Padding(
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : reviews.isEmpty
+          ? Center(
+        child: Text(
+          "No reviews available",
+          style: TextStyle(color: white, fontSize: 16),
+        ),
+      )
+          : Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
           itemCount: reviews.length,
@@ -76,7 +107,10 @@ class _ReviewsState extends State<Reviews> {
                     children: [
                       Text(
                         review['username'],
-                        style: TextStyle(color: white, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            color: white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
                       ),
                       RatingBarIndicator(
                         rating: review['rating'],
@@ -84,7 +118,8 @@ class _ReviewsState extends State<Reviews> {
                         itemCount: 10,
                         itemSize: 18,
                         physics: BouncingScrollPhysics(),
-                        itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                        itemBuilder: (context, _) =>
+                            Icon(Icons.star, color: Colors.amber),
                       ),
                     ],
                   ),
@@ -92,7 +127,10 @@ class _ReviewsState extends State<Reviews> {
                   // Headline
                   Text(
                     review['headline'],
-                    style: TextStyle(color: primaryRed, fontSize: 14, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: primaryRed,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 6),
                   // Spoiler Warning & Review
@@ -100,25 +138,29 @@ class _ReviewsState extends State<Reviews> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          showSpoiler[index] = !(showSpoiler[index] ?? false);
+                          showSpoiler[index] =
+                          !(showSpoiler[index] ?? false);
                         });
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 4, horizontal: 8),
                             decoration: BoxDecoration(
                               color: primaryRed,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text("⚠️ Contains Spoilers", style: TextStyle(color: white)),
+                            child: Text("⚠️ Contains Spoilers",
+                                style: TextStyle(color: white)),
                           ),
                           const SizedBox(height: 4),
                           showSpoiler[index] ?? false
                               ? Text(
                             review['review'],
-                            style: TextStyle(color: white, fontSize: 14),
+                            style: TextStyle(
+                                color: white, fontSize: 14),
                           )
                               : Container(
                             height: 40,
@@ -127,7 +169,9 @@ class _ReviewsState extends State<Reviews> {
                             alignment: Alignment.center,
                             child: Text(
                               "Tap to reveal spoilers",
-                              style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                              style: TextStyle(
+                                  color: Colors.grey.shade400,
+                                  fontSize: 14),
                             ),
                           ),
                         ],
@@ -136,7 +180,8 @@ class _ReviewsState extends State<Reviews> {
                   else
                     Text(
                       review['review'],
-                      style: TextStyle(color: white, fontSize: 14),
+                      style:
+                      TextStyle(color: white, fontSize: 14),
                     ),
                 ],
               ),

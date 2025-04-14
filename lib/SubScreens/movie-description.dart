@@ -85,8 +85,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   SizedBox(width: 150,),
                   InkWell(
                       onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Reviews()));
-                      },
+                        if (widget.movie['id'] != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Reviews(movieId: widget.movie['id'])),
+                          );
+                        }                      },
                       child: Text('Review', style: TextStyle(color: white, fontSize: 20),)),
                 ],
               ),
